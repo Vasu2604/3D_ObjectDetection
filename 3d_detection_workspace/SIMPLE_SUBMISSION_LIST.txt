@@ -1,0 +1,57 @@
+=================================================================
+            EXACT FILES TO SUBMIT FOR YOUR ASSIGNMENT
+=================================================================
+
+Base Directory: ~/3d_detection_workspace/
+
+-----------------------------------------------------------------
+PART 1: DOCUMENTATION (4 files - IN ROOT FOLDER)
+-----------------------------------------------------------------
+1. README.md
+2. report.md  
+3. results_summary.txt
+4. results_summary.json
+
+-----------------------------------------------------------------
+PART 2: CODE (3 files - IN scripts/ FOLDER)
+-----------------------------------------------------------------
+5. scripts/final_pointpillars_inference.py
+6. scripts/final_second_inference.py
+7. scripts/enhanced_inference_with_saving.py
+
+-----------------------------------------------------------------
+PART 3: CONFIGS (2 files - IN configs/ FOLDER)
+-----------------------------------------------------------------
+8. configs/pointpillars_hv_secfpn_8xb6-160e_kitti-3d-car.py
+9. configs/second_hv_secfpn_8xb6-80e_kitti-3d-car.py
+
+-----------------------------------------------------------------
+PART 4: RESULTS (ENTIRE FOLDER - results/)
+-----------------------------------------------------------------
+10. results/ <-- Submit the ENTIRE folder with everything inside
+
+-----------------------------------------------------------------
+OPTIONAL (Recommended - 4 extra files)
+-----------------------------------------------------------------
+11. ASSIGNMENT_COMPLETION_STATUS.md
+12. PROJECT_COMPLETION_SUMMARY.md  
+13. GPU_INFERENCE_RESULTS.md
+14. SUBMISSION_CHECKLIST.md
+
+-----------------------------------------------------------------
+DO NOT SUBMIT (Too big!)
+-----------------------------------------------------------------
+❌ checkpoints/ folder (too large)
+❌ data/ folder (too large)
+❌ Any .pth files
+
+=================================================================
+                     TOTAL TO SUBMIT
+=================================================================
+
+Minimum (required): 9 files + results/ folder
+Recommended: 13 files + results/ folder
+
+Estimated size: 2-10 MB (without checkpoints/data)
+
+=================================================================

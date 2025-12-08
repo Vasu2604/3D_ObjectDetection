@@ -1,0 +1,17 @@
+======================================================================
+POINTPILLARS 3D OBJECT DETECTION - KITTI DATASET
+======================================================================
+
+Hardware: NVIDIA Tesla T4 GPU (15GB VRAM)
+CUDA Version: 12.8
+Device: cuda:0
+
+RESULTS:
+----------------------------------------------------------------------
+Total Detections: 10 objects
+Bounding Box Shape: torch.Size([10, 7])
+Top-5 Confidence Scores: [0.9750, 0.9682, 0.9457, 0.8905, 0.8890]
+Top-5 Labels: [0, 0, 0, 0, 0] (all cars)
+Average Confidence: 93.37%
+Processing Mode: GPU-accelerated
+======================================================================

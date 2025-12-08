@@ -1,0 +1,37 @@
+{
+  "model": "SECOND",
+  "config": "second_hv_secfpn_8xb6-80e_kitti-3d-car.py",
+  "checkpoint": "second_kitti.pth",
+  "dataset": "KITTI",
+  "sample": "000008.bin",
+  "device": "cuda:0",
+  "timestamp": "2025-12-07T03:09:52.985708",
+  "num_detections": 11,
+  "results": {
+    "bounding_boxes_shape": [
+      11,
+      7
+    ],
+    "top5_confidence_scores": [
+      0.9443,
+      0.9171,
+      0.913,
+      0.7841,
+      0.7433
+    ],
+    "top5_labels": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "avg_confidence": 0.8804,
+    "all_cars": true
+  },
+  "performance": {
+    "gpu": "Tesla T4",
+    "inference_time_approx": "<5 seconds",
+    "mode": "GPU-accelerated"
+  }
+}

@@ -1,0 +1,16 @@
+======================================================================
+MODEL COMPARISON: PointPillars vs SECOND
+======================================================================
+
+Dataset: KITTI (000008.bin)
+Hardware: Tesla T4 GPU
+
+Metric                  | PointPillars | SECOND    | Winner
+----------------------------------------------------------------------
+Total Detections        | 10           | 11        | SECOND (+recall)
+Top Confidence Score    | 0.9750       | 0.9443    | PointPillars
+Avg Top-5 Confidence    | 93.37%       | 88.04%    | PointPillars +5.3%
+Precision (High Conf)   | Higher       | Lower     | PointPillars
+Recall                  | Lower        | Higher    | SECOND
+Processing Speed        | Fast ⚡       | Fast ⚡    | Similar
+======================================================================

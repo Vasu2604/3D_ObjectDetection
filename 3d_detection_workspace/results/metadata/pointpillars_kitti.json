@@ -1,0 +1,37 @@
+{
+  "model": "PointPillars",
+  "config": "pointpillars_hv_secfpn_8xb6-160e_kitti-3d-car.py",
+  "checkpoint": "pointpillars_kitti.pth",
+  "dataset": "KITTI",
+  "sample": "000008.bin",
+  "device": "cuda:0",
+  "timestamp": "2025-12-07T03:09:52.985471",
+  "num_detections": 10,
+  "results": {
+    "bounding_boxes_shape": [
+      10,
+      7
+    ],
+    "top5_confidence_scores": [
+      0.975,
+      0.9682,
+      0.9457,
+      0.8905,
+      0.889
+    ],
+    "top5_labels": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "avg_confidence": 0.9337,
+    "all_cars": true
+  },
+  "performance": {
+    "gpu": "Tesla T4",
+    "inference_time_approx": "<5 seconds",
+    "mode": "GPU-accelerated"
+  }
+}

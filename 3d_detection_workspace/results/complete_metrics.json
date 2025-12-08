@@ -1,0 +1,8 @@
+{
+  "PointPillars": {
+    "error": "checkpoints/hv_pointpillars_secfpn_6x8_160e_kitti-3d-car_20220331_134606-d42d15ed.pth can not be found."
+  },
+  "SECOND": {
+    "error": "checkpoints/hv_second_secfpn_6x8_80e_kitti-3d-3class_20200620_230238-393f000c.pth can not be found."
+  }
+}
