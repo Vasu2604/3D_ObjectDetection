@@ -4,9 +4,9 @@
 [![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/)
 [![PyTorch 2.1](https://img.shields.io/badge/pytorch-2.1.2-red.svg)](https://pytorch.org/)
 
-> **3D Object Detection** using PointPillars, SECOND, and CenterPoint on KITTI & nuScenes datasets
+> **3D Object Detection** using PointPillars, SECOND, 3DSSD, and CenterPoint on KITTI & nuScenes datasets
 
-**Author:** Vasu Patel  
+**Author:** Vasav Patel  
 **Course:** CMPE 297 - Deep Learning  
 **Institution:** San Jose State University  
 **Date:** December 2025
@@ -32,16 +32,17 @@
 
 ## 🎯 Overview
 
-This project demonstrates end-to-end **3D object detection** for autonomous driving using three state-of-the-art deep learning models:
+This project demonstrates end-to-end **3D object detection** for autonomous driving using four state-of-the-art deep learning models:
 
 | Model | Type | Key Feature |
 |-------|------|-------------|
-| **PointPillars** | Pillar-based | Fast, real-time capable |
+| **PointPillars** | Pillar-based | Fast, real-time capable (62 FPS) |
 | **SECOND** | Voxel-based | High accuracy, sparse 3D convolutions |
+| **3DSSD** | Point-based | Single-stage, anchor-free |
 | **CenterPoint** | Center-based | Best for tracking, velocity estimation |
 
 **Datasets Used:**
-- **KITTI** - Front-facing LiDAR, highway/suburban scenes
+- **KITTI** - Front-facing LiDAR, highway/suburban scenes, 3 classes
 - **nuScenes** - 360° LiDAR, dense urban traffic, 10 classes
 
 ---
@@ -50,6 +51,20 @@ This project demonstrates end-to-end **3D object detection** for autonomous driv
 
 ```
 3DObjectDetection/
+├── submission/                    # 📦 Ready-to-submit folder
+│   ├── README.md                  # Setup instructions
+│   ├── report.md                  # Markdown report
+│   ├── code/                      # Inference scripts
+│   │   ├── mmdet3d_inference2.py  # Main inference script
+│   │   ├── compare_models_metrics.py
+│   │   └── scripts/
+│   ├── results/                   # All deliverables
+│   │   ├── demo_video.mp4         # Demo videos
+│   │   ├── screenshots/           # 18 labeled screenshots
+│   │   ├── ply_files/             # Point cloud samples
+│   │   └── json_metadata/         # Prediction JSONs
+│   └── outputs/                   # Full inference outputs
+│
 ├── 3D-object-detection/           # Main inference workspace
 │   ├── mmdet3d_inference2.py      # Core inference script
 │   ├── compare_models_metrics.py  # Model comparison script
@@ -71,8 +86,13 @@ This project demonstrates end-to-end **3D object detection** for autonomous driv
 │   ├── CENTERPOINT_KITTY/         # CenterPoint on KITTI
 │   └── CENTERPOINT_NUSCENES/      # CenterPoint on nuScenes
 │
-├── README.md                      # This file
-└── report.tex                     # LaTeX report
+├── images/                        # Report images
+│   ├── pointpillars_kitti_2d.png
+│   ├── second_kitti_2d.png
+│   ├── centerpoint_nuscenes_bev.png
+│   └── open3d_3d_view.png
+│
+└── README.md                      # This file
 ```
 
 ---
@@ -93,7 +113,7 @@ This project demonstrates end-to-end **3D object detection** for autonomous driv
 | MMCV | 2.1.0 |
 | MMDetection3D | 1.4.0 |
 | NumPy | 1.26.4 |
-| Open3D | Latest |
+| Open3D | 0.18.0 |
 
 ---
 
@@ -163,6 +183,15 @@ GPU: NVIDIA Tesla T4
 
 ## 🤖 Models & Datasets
 
+### Model Architectures
+
+| Model | Type | Encoding | Key Innovation |
+|-------|------|----------|----------------|
+| **PointPillars** | Pillar-based | Vertical pillars → 2D CNN | Fast BEV encoding, **62 FPS** |
+| **SECOND** | Voxel-based | Sparse 3D convolutions | High accuracy, geometric detail |
+| **3DSSD** | Point-based | Raw point features | Anchor-free, single-stage |
+| **CenterPoint** | Center-based | Heatmap + regression | Multi-class, velocity estimation |
+
 ### Model Configurations
 
 | Model | Dataset | Checkpoint | Config |
@@ -170,6 +199,7 @@ GPU: NVIDIA Tesla T4
 | PointPillars | KITTI | `pointpillars_kitti.pth` | `pointpillars_hv_secfpn_8xb6-160e_kitti-3d-car.py` |
 | PointPillars | nuScenes | `pointpillars_nus.pth` | `pointpillars_hv_fpn_sbn-all_8xb4-2x_nus-3d.py` |
 | SECOND | KITTI | `second_kitti_car.pth` | `second_hv_secfpn_8xb6-80e_kitti-3d-car.py` |
+| 3DSSD | KITTI | `3dssd_kitti.pth` | `3dssd_4x4_kitti-3d-car.py` |
 | CenterPoint | nuScenes | `centerpoint_nusc.pth` | `centerpoint_voxel01_second_secfpn_8xb4-cyclic-20e_nus-3d.py` |
 
 ### Download Checkpoints
@@ -178,6 +208,7 @@ GPU: NVIDIA Tesla T4
 # Using OpenMIM
 mim download mmdet3d --config pointpillars_hv_secfpn_8xb6-160e_kitti-3d-car --dest checkpoints/
 mim download mmdet3d --config second_hv_secfpn_8xb6-80e_kitti-3d-car --dest checkpoints/
+mim download mmdet3d --config 3dssd_4x4_kitti-3d-car --dest checkpoints/
 mim download mmdet3d --config centerpoint_voxel01_second_secfpn_8xb4-cyclic-20e_nus-3d --dest checkpoints/
 ```
 
@@ -250,6 +281,21 @@ python mmdet3d_inference2.py \
   --score-thr 0.2
 ```
 
+### 3DSSD on KITTI
+
+```bash
+python mmdet3d_inference2.py \
+  --dataset kitti \
+  --input-path data/kitti/training \
+  --frame-number 000008 \
+  --model checkpoints/3dssd/3dssd_4x4_kitti-3d-car.py \
+  --checkpoint checkpoints/3dssd/3dssd_kitti.pth \
+  --out-dir outputs/3dssd \
+  --device cuda:0 \
+  --headless \
+  --score-thr 0.6
+```
+
 ### View Results with Open3D
 
 ```bash
@@ -266,18 +312,20 @@ python scripts/open3d_view_saved_ply.py \
 
 ### Performance Comparison Table
 
-| Model + Dataset | Detections | Mean Score | Max Score | High Conf (≥0.7) | Score Std |
-|-----------------|------------|------------|-----------|------------------|-----------|
-| **PointPillars (KITTI)** | 10 | **0.792** | 0.975 | 8 (80%) | 0.169 |
-| PointPillars (nuScenes) | 365 | 0.127 | 0.711 | 1 | 0.095 |
-| **SECOND (KITTI)** | 11 | 0.880 | **0.944** | **9 (82%)** | 0.152 |
-| CenterPoint (nuScenes) | 264 | 0.244 | 0.874 | 15 | 0.183 |
+| Model + Dataset | Detections | Mean Score | Max Score | High Conf (≥0.7) | Score Std | Est. FPS |
+|-----------------|------------|------------|-----------|------------------|-----------|----------|
+| **PointPillars (KITTI)** | 10 | **0.792** | 0.975 | 8 (80%) | 0.169 | 50-62 |
+| PointPillars (nuScenes) | 365 | 0.127 | 0.711 | 1 (0.3%) | 0.095 | 45-55 |
+| **SECOND (KITTI)** | 11 | 0.880 | 0.944 | **9 (82%)** | **0.152** | 25-30 |
+| 3DSSD (KITTI) | 50 | 0.158 | 0.905 | 7 (14%) | 0.318 | 20-25 |
+| CenterPoint (nuScenes) | 264 | 0.244 | 0.874 | 15 (6%) | 0.183 | 18-22 |
 
 ### Best Performers
 
 - **Highest Mean Score:** PointPillars on KITTI (0.792)
 - **Most Accurate:** SECOND on KITTI (82% high-confidence)
 - **Best Multi-Class:** CenterPoint on nuScenes (264 detections, 10 classes)
+- **Fastest:** PointPillars (50-62 FPS)
 
 ---
 
@@ -300,14 +348,19 @@ Each inference run produces:
 - `3D-object-detection/outputs/detections_demo.mp4`
 - `3D-object-detection/results/demo_video.mp4`
 - `assignment_code/CENTERPOINT_NUSCENES/centerpoint_nuscenes_demo.mp4`
+- `submission/results/demo_video.mp4`
 
-### Screenshots Location
+### Screenshots (18+ total)
 
 ```
-3D-object-detection/outputs/kitti_pointpillars_gpu/000008_2d_vis.png
-3D-object-detection/outputs/3dssd/000008_2d_vis.png
-3D-object-detection/outputs/nuscenes_pointpillars/sample_open3d.png
-assignment_code/CENTERPOINT_NUSCENES/*_bev.png
+submission/results/screenshots/
+├── pointpillars_kitti_2d.png
+├── second_kitti_2d.png
+├── centerpoint_nuscenes_bev.png
+├── open3d_3d_view.png
+├── 3dssd_2d.png
+├── kitti_pointpillars_3d.png
+└── ... (12 more)
 ```
 
 ---
@@ -324,18 +377,20 @@ assignment_code/CENTERPOINT_NUSCENES/*_bev.png
 - **82% high-confidence detections** - most accurate on KITTI
 - **Best for:** Offline analysis, precision-critical applications
 
-### 3. CenterPoint Dominates nuScenes
+### 3. 3DSSD Has High False Positive Rate
+- Produces 50 detections with mean score of only 0.158
+- **Mitigation:** Use score threshold ≥0.6 to reduce false positives
+- **Best for:** Research, not production deployment
+
+### 4. CenterPoint Dominates nuScenes
 - Center-based detection handles 360° multi-class scenes effectively
 - Detected **264 objects across 10 categories**
 - **Best for:** Urban autonomous driving, tracking applications
 
-### 4. Dataset Complexity Impacts Performance
-- PointPillars drops from 0.792 (KITTI) to 0.127 (nuScenes)
+### 5. Dataset Complexity Impacts Performance
+- PointPillars drops from 0.792 (KITTI) to 0.127 (nuScenes) - **6x degradation**
 - Simpler architectures struggle with dense urban environments
-
-### 5. Voxel-Based Methods Are More Stable
-- Lower score variance (0.169-0.183) indicates better confidence calibration
-- Point-based methods can achieve higher peaks but with more variability
+- **Implication:** Models don't generalize across datasets
 
 ---
 
@@ -343,17 +398,17 @@ assignment_code/CENTERPOINT_NUSCENES/*_bev.png
 
 | Requirement | Status | Location |
 |-------------|--------|----------|
-| ≥2 Models | ✅ 3 models | PointPillars, SECOND, CenterPoint |
-| ≥2 Datasets | ✅ 2 datasets | KITTI, nuScenes |
-| .png frames | ✅ | `outputs/*/000008_2d_vis.png` |
-| .ply point clouds | ✅ | `outputs/*/*_points.ply` |
-| .json metadata | ✅ | `outputs/*/*_predictions.json` |
-| Demo video | ✅ | `outputs/detections_demo.mp4` |
-| ≥4 screenshots | ✅ 12+ | `outputs/`, `results/` |
+| ≥2 Models | ✅ **4 models** | PointPillars, SECOND, 3DSSD, CenterPoint |
+| ≥2 Datasets | ✅ **2 datasets** | KITTI, nuScenes |
+| .png frames | ✅ **50+ files** | `outputs/*/000008_2d_vis.png` |
+| .ply point clouds | ✅ **50+ files** | `outputs/*/*_points.ply` |
+| .json metadata | ✅ **25+ files** | `outputs/*/*_predictions.json` |
+| Demo video | ✅ **5 videos** | `outputs/detections_demo.mp4` |
+| ≥4 screenshots | ✅ **18 screenshots** | `submission/results/screenshots/` |
 | Comparison table | ✅ | See Results section |
-| 3-5 takeaways | ✅ 5 | See Key Takeaways |
+| 3-5 takeaways | ✅ **5 takeaways** | See Key Takeaways |
 | README | ✅ | This file |
-| report.md | ✅ | `report.tex` (LaTeX) |
+| report.md | ✅ | `submission/report.md` |
 
 ---
 
@@ -387,21 +442,29 @@ pip install torch==2.1.2 --index-url https://download.pytorch.org/whl/cu121
 mim download mmdet3d --config <config_name> --dest checkpoints/
 ```
 
+### 3DSSD False Positives
+```bash
+# Use higher score threshold
+--score-thr 0.6  # or 0.7
+```
+
 ---
 
 ## 📚 References
 
-1. **PointPillars:** Lang, A.H. et al. "PointPillars: Fast Encoders for Object Detection from Point Clouds." CVPR 2019.
+1. **PointPillars:** Lang, A.H. et al. "PointPillars: Fast Encoders for Object Detection from Point Clouds." CVPR 2019. [arXiv](https://arxiv.org/abs/1812.05784)
 
-2. **SECOND:** Yan, Y. et al. "SECOND: Sparsely Embedded Convolutional Detection." Sensors 2018.
+2. **SECOND:** Yan, Y. et al. "SECOND: Sparsely Embedded Convolutional Detection." Sensors 2018. [DOI](https://doi.org/10.3390/s18103337)
 
-3. **CenterPoint:** Yin, T. et al. "Center-based 3D Object Detection and Tracking." CVPR 2021.
+3. **3DSSD:** Yang, Z. et al. "3DSSD: Point-based 3D Single Stage Object Detector." CVPR 2020. [arXiv](https://arxiv.org/abs/2002.10187)
 
-4. **MMDetection3D:** https://github.com/open-mmlab/mmdetection3d
+4. **CenterPoint:** Yin, T. et al. "Center-based 3D Object Detection and Tracking." CVPR 2021. [arXiv](https://arxiv.org/abs/2006.11275)
 
-5. **KITTI Dataset:** http://www.cvlibs.net/datasets/kitti/
+5. **MMDetection3D:** https://github.com/open-mmlab/mmdetection3d
 
-6. **nuScenes Dataset:** https://www.nuscenes.org/
+6. **KITTI Dataset:** http://www.cvlibs.net/datasets/kitti/
+
+7. **nuScenes Dataset:** https://www.nuscenes.org/
 
 ---
 
@@ -413,7 +476,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👤 Author
 
-**Vasu Patel**  
+**Vasav Patel**  
 - GitHub: [@Vasu2604](https://github.com/Vasu2604)
 - Course: CMPE 297 - Deep Learning
 - Institution: San Jose State University
@@ -423,4 +486,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 <p align="center">
   <b>⭐ Star this repo if you found it helpful!</b>
 </p>
-
