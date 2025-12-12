@@ -7,7 +7,7 @@
 > **3D Object Detection** using PointPillars, SECOND, 3DSSD, and CenterPoint on KITTI & nuScenes datasets
 
 **Author:** Vasav Patel  
-**Course:** CMPE 297 - Deep Learning  
+**Course:** CMPE 249 - Intelligent Autonomous Systems
 **Institution:** San Jose State University  
 **Date:** December 2025
 
@@ -478,7 +478,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Vasav Patel**  
 - GitHub: [@Vasu2604](https://github.com/Vasu2604)
-- Course: CMPE 297 - Deep Learning
+- Course: CMPE 249 - Intelligent Autonomous Systems
 - Institution: San Jose State University
 
 ---
